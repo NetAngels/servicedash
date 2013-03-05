@@ -16,8 +16,8 @@ Bootstrap(app)
 appconfig = ConfigParser.ConfigParser()
 appconfig.read('./conf/servicedash.conf')
 
-VERSION = '0.0.1'
-CONFIG = './conf/config.yaml'
+VERSION = '0.0.2'
+CONFIGFILE = './conf/config.yaml'
 config = None
 config_mod_time = None
 
@@ -26,7 +26,7 @@ app.config['BOOTSTRAP_USE_CDN'] = True
 
 
 def get_config_mod_time():
-    return time.ctime(os.path.getmtime(CONFIG))
+    return time.ctime(os.path.getmtime(CONFIGFILE))
 
 
 def build_graphs_sublist(graphs, node):
@@ -61,7 +61,7 @@ def check_config():
     global config
     global config_mod_time
     if get_config_mod_time() != config_mod_time:
-        config = load(open(CONFIG))
+        config = load(open(CONFIGFILE))
         config_mod_time = get_config_mod_time()
         app.logger.debug('Config (re-)loaded')
 
