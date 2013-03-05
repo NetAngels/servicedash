@@ -46,6 +46,13 @@ def build_tables_sublist(tables, node):
     return tables_list
 
 
+def get_node_name(node):
+    if node.__class__ == str:
+        return node
+    else:
+        return [key for key, value in node.iteritems() if value == None][0] 
+
+
 @app.before_request
 def check_config():
     global config
@@ -60,26 +67,21 @@ def check_config():
 def render():
     # proxy requests to graphite server from localhost
     # this code is for debug server only. it never runs in production.
-    #return redirect(request.url.replace(request.url_root, 'http://graphite.netangels.ru/render/'))
     resp = urllib.urlopen(request.url.replace(request.url_root, 'http://graphite.netangels.ru/render/'))
     return Response(content_type=resp.headers.typeheader, response=resp.read())
 
 
 @app.route('/')
 def index():
-    # show network tab by default
-    return redirect(request.url_root + 'networks/summary/')
+    # show first category's first node by default
+    return redirect(request.url_root + config.keys()[0] + '/' + get_node_name(config[config.keys()[0]]['nodes'][0]) + '/')
 
 
 @app.route('/<current_category>/')
 def show_category(current_category):
     if config.has_key(current_category):
         first_node = config[current_category]['nodes'][0]
-        if first_node.__class__ == str:
-            return redirect(request.url_root + current_category + '/' + first_node + '/')
-        else:
-            return redirect(request.url_root + current_category + '/' + \
-                    [key for key, value in first_node.iteritems() if value == None][0] + '/')
+        return redirect(request.url_root + current_category + '/' + get_node_name(first_node) + '/')
     else:
         return redirect(request.url_root)
 
