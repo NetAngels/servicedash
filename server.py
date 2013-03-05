@@ -8,10 +8,13 @@ from string import Template
 from ReverseProxied import ReverseProxied
 import os.path, time
 import urllib
+import ConfigParser
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 Bootstrap(app)
+appconfig = ConfigParser.ConfigParser()
+appconfig.read('./conf/servicedash.conf')
 
 VERSION = '0.0.1'
 CONFIG = './conf/config.yaml'
@@ -67,7 +70,7 @@ def check_config():
 def render():
     # proxy requests to graphite server from localhost
     # this code is for debug server only. it never runs in production.
-    resp = urllib.urlopen(request.url.replace(request.url_root, 'http://graphite.netangels.ru/render/'))
+    resp = urllib.urlopen(request.url.replace(request.url_root, appconfig.get('graphite', 'renderurl')))
     return Response(content_type=resp.headers.typeheader, response=resp.read())
 
 
