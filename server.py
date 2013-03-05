@@ -8,13 +8,16 @@ from string import Template
 from ReverseProxied import ReverseProxied
 import os.path, time
 import urllib
+import ConfigParser
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 Bootstrap(app)
+appconfig = ConfigParser.ConfigParser()
+appconfig.read('./conf/servicedash.conf')
 
-VERSION = '0.0.1'
-CONFIG = './conf/config.yaml'
+VERSION = '0.0.2'
+CONFIGFILE = './conf/config.yaml'
 config = None
 config_mod_time = None
 
@@ -23,7 +26,7 @@ app.config['BOOTSTRAP_USE_CDN'] = True
 
 
 def get_config_mod_time():
-    return time.ctime(os.path.getmtime(CONFIG))
+    return time.ctime(os.path.getmtime(CONFIGFILE))
 
 
 def build_graphs_sublist(graphs, node):
@@ -46,12 +49,19 @@ def build_tables_sublist(tables, node):
     return tables_list
 
 
+def get_node_name(node):
+    if node.__class__ == str:
+        return node
+    else:
+        return [key for key, value in node.iteritems() if value == None][0] 
+
+
 @app.before_request
 def check_config():
     global config
     global config_mod_time
     if get_config_mod_time() != config_mod_time:
-        config = load(open(CONFIG))
+        config = load(open(CONFIGFILE))
         config_mod_time = get_config_mod_time()
         app.logger.debug('Config (re-)loaded')
 
@@ -60,26 +70,21 @@ def check_config():
 def render():
     # proxy requests to graphite server from localhost
     # this code is for debug server only. it never runs in production.
-    #return redirect(request.url.replace(request.url_root, 'http://graphite.netangels.ru/render/'))
-    resp = urllib.urlopen(request.url.replace(request.url_root, 'http://graphite.netangels.ru/render/'))
+    resp = urllib.urlopen(request.url.replace(request.url_root, appconfig.get('graphite', 'renderurl')))
     return Response(content_type=resp.headers.typeheader, response=resp.read())
 
 
 @app.route('/')
 def index():
-    # show network tab by default
-    return redirect(request.url_root + 'networks/summary/')
+    # show first category's first node by default
+    return redirect(request.url_root + config.keys()[0] + '/' + get_node_name(config[config.keys()[0]]['nodes'][0]) + '/')
 
 
 @app.route('/<current_category>/')
 def show_category(current_category):
     if config.has_key(current_category):
         first_node = config[current_category]['nodes'][0]
-        if first_node.__class__ == str:
-            return redirect(request.url_root + current_category + '/' + first_node + '/')
-        else:
-            return redirect(request.url_root + current_category + '/' + \
-                    [key for key, value in first_node.iteritems() if value == None][0] + '/')
+        return redirect(request.url_root + current_category + '/' + get_node_name(first_node) + '/')
     else:
         return redirect(request.url_root)
 
