@@ -1,6 +1,6 @@
 # Service Status Dashboard for Graphite
 
-This project is targeted for those who uses [graphite](http://graphite.wikidot.com) for gathering statistics from several servers/routers/whatever andwants to see it as graphs or summary tables on a dashboard which is hopefully slightly better than the Graphite's dashboard.
+This project is targeted for those who uses [graphite](http://graphite.wikidot.com) for gathering statistics from several servers/routers/whatever and wants to see it as graphs or summary tables on a dashboard which is hopefully slightly better than the Graphite's dashboard.
 
 You can define graphs or tables to see on the dashboard using very simple yaml based config file. Here's a short sample. Imagine you have several groups of similar set up servers. Let's name these groups as 'proxies', 'backends' and 'databases'. For every group we can define what to show on 'summary' page and on every server's individual pages. So let's assume we want to see a load average graph of top 3 most loaded backend servers on backends' summary page and load average and eth0 bandwidth usage on individual server's pages as graphs and total hits of top 3 most visited sites grouped by day as tables. Then our config file `./conf/config.yaml` would look like this:
 
@@ -26,4 +26,4 @@ You can define graphs or tables to see on the dashboard using very simple yaml b
     databases:
       ...
 
-Probably you have noticed we used an alias `$name` here. It is always replaced with server's name which page is to be shown. You an also define individual graphs or tables for every server defining it's individual `graphs:` and `tables:` sections using the same format as above.
+Probably you have noticed we used an alias `$name` here. It is always replaced with server's name which page is to be shown. You also can define individual graphs or tables for every server defining it's individual `graphs:` and `tables:` sections using the same format as above.
