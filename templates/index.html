@@ -45,18 +45,24 @@ $( document ).ready(function() {
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
           <a class="brand" href="#">Service Status Dashboard</a>
           <div class="nav-collapse">
             <ul class="nav">
               {% for category in categories %}
               <li{% if category.name == current_category %} class="active"{% endif %} ><a href="{{ category.url }}">{{ category.name|capitalize }}</a></li>
               {% endfor %}
+              <li class="divider-vertical"></li>
             </ul>
+            <ul class="nav pull-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select range<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#">Last 24 hours</a></li>
+                    <li><a href="#">Last 3 days</a></li>
+                    <li><a href="#">Last week</a></li>
+                </ul>
+              </li>
+          </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
