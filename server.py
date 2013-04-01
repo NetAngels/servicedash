@@ -17,7 +17,7 @@ Bootstrap(app)
 appconfig = ConfigParser.ConfigParser()
 appconfig.read('./conf/servicedash.conf')
 
-VERSION = '0.0.2'
+VERSION = '0.1.0'
 CONFIGFILE = './conf/config.yaml'
 config = None
 config_mod_time = None
