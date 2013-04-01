@@ -9,6 +9,9 @@
     <script src="{{'js/bootstrap-modal.js'|bootstrap_find_resource}}"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript">
+function showAsFloat(n){
+         return !Number(n) ? n : parseInt(n) === n ? n: Number(n).toFixed(2);
+}
 $( document ).ready(function() {
         $.each($(".graphite_table"), function(index, item) {
             var div = $(item);
@@ -22,7 +25,7 @@ $( document ).ready(function() {
                 $.each(data, function(key, val) {
                     var points = [];
                     $.each(val.datapoints, function(keyy, vall) {
-                        points.push('<td>' + vall[0] + '</td>');
+                        points.push('<td>' + showAsFloat(vall[0]) + '</td>');
                     });
                     rows.push('<tr><td>' + val.target + '</td>' + points.join('') + '</tr>');
                 });
