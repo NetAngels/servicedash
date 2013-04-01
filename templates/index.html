@@ -55,11 +55,13 @@ $( document ).ready(function() {
             </ul>
             <ul class="nav pull-right">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select range<b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Display: {{ data_range }}<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">Last 24 hours</a></li>
-                    <li><a href="#">Last 3 days</a></li>
-                    <li><a href="#">Last week</a></li>
+                    <li><a href="?range=1day">Last 24 hours</a></li>
+                    <li><a href="?range=3days">Last 3 days</a></li>
+                    <li><a href="?range=1week">Last week</a></li>
+                    <li><a href="?range=2weeks">Last 2 weeks</a></li>
+                    <li><a href="?range=4weeks">Last 4 weeks</a></li>
                 </ul>
               </li>
           </ul>
@@ -82,14 +84,14 @@ $( document ).ready(function() {
             <ul class="thumbnails">
               {% for graph in node.graphs %}
               <li class="span4">
-              <a href="#myModal{{ loop.index }}" role="button" class="btn" data-toggle="modal"><img class="lazyimg" src="{{ url_for('static', filename='loading.gif') }}" lazy-src="{{ graph }}&width=320" alt=""></a>
+              <a href="#myModal{{ loop.index }}" role="button" class="btn" data-toggle="modal"><img class="lazyimg" src="{{ url_for('static', filename='loading.gif') }}" lazy-src="{{ graph }}&width=320&from=-{{ data_range }}" alt=""></a>
                 <div class="modal hide fade" id="myModal{{ loop.index }}" role="dialog" aria-labelledby="myModalLabel{{ loop.index }}" aria-hidden="true">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h3 id="myModalLabel{{ loop.index }}">{{ node.name }}</h3>
                   </div>
                   <div class="modal-body">
-                      <p><img id="myModalImg{{ loop.index }}" src="{{ url_for('static', filename='loading.gif') }}" lazy-src="{{ graph }}&width=600" alt=""></p>
+                      <p><img id="myModalImg{{ loop.index }}" src="{{ url_for('static', filename='loading.gif') }}" lazy-src="{{ graph }}&width=600&from=-{{ data_range }}" alt=""></p>
                   </div>
                   <div class="modal-footer">
                     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -99,7 +101,7 @@ $( document ).ready(function() {
               {% endfor %}
             </ul>
             {% for table in node.tables %}
-            <div class="graphite_table" data-title="{{ table.title }}" data-src="{{ table.url }}">Loading {{ table.title }} data ... <img src="{{ url_for('static', filename='loading.gif') }}" alt="" width="50" height="50" /></div>
+            <div class="graphite_table" data-title="{{ table.title }}" data-src="{{ table.url }}&from=-{{ data_range }}">Loading {{ table.title }} data ... <img src="{{ url_for('static', filename='loading.gif') }}" alt="" width="50" height="50" /></div>
             {% endfor %}
           </div>
         </div>

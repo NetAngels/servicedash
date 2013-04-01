@@ -1,17 +1,18 @@
 #!/usr/bin/env python
 #  -*- coding: utf8 -*-
 
-from flask import Flask, url_for, render_template, redirect, request, Response
+from flask import Flask, url_for, render_template, redirect, request, Response, session
 from flask.ext.bootstrap import Bootstrap
 from yaml import load
 from string import Template
 from ReverseProxied import ReverseProxied
-import os.path, time
+import os, os.path, time
 import urllib
 import ConfigParser
 
 app = Flask(__name__)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
+app.secret_key = os.urandom(24)
 Bootstrap(app)
 appconfig = ConfigParser.ConfigParser()
 appconfig.read('./conf/servicedash.conf')
@@ -91,6 +92,10 @@ def show_category(current_category):
 
 @app.route('/<current_category>/<current_node>/')
 def show_node(current_category, current_node):
+    data_range = request.args.get('range', session.get('data_range', '1day'))
+    session['data_range'] = data_range
+    app.logger.debug('data_range: %s' % data_range)
+
     categories = []
     nodes = []
     node_dict = {'name': current_node}
@@ -120,7 +125,7 @@ def show_node(current_category, current_node):
                 nodes.append(node)
 
     return render_template('index.html', categories=categories, nodes=nodes, current_category=current_category, current_node=current_node, \
-            node=node_dict)
+            node=node_dict, data_range=data_range)
 
 
 if '__main__' == __name__:
